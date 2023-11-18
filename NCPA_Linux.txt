@@ -1,0 +1,144 @@
+rpm -Uvh https://repo.nagios.com/nagios/9/nagios-repo-9-1.el9.noarch.rpm
+yum install ncpa -y
+vi /usr/local/ncpa/etc/ncpa.cfg
+Change the token if needed
+systemctl status ncpa_listener
+systemctl restart ncpa_listener
+
+define host {
+        host_name                       HOSTNAME
+        use                             linux-server
+        address                         IPADDRESS
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        notifications_enabled           1
+        }
+
+
+
+define service {
+        host_name                       HOSTNAME
+        service_description             / Disk Usage
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'disk/logical/|' -w '90' -c '95'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             /boot Disk Usage
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'disk/logical/|boot' -w '90' -c '95'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+
+define service {
+        host_name                       HOSTNAME
+        service_description             CPU Usage
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693 -M cpu/percent -w '90' -c '95' -q 'aggregate=avg'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Memory Usage
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693 -M memory/virtual -u 'Gi' -w '90' -c '95'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Ping
+        use                             linux-service
+        check_command                   check-host-alive
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Swap Usage
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693 -M memory/swap -u 'Gi' -w '90' -c '95'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Login User Count
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693 -M user/count -w '5' -c '10'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Crond Service Status
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'services' -q 'service=crond,status=running'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             SSHD Service Status
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'services' -q 'service=sshd,status=running'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Uptime
+        use                             linux-service
+        check_command                   check_ncpa!-t mytoken -T 60 -M 'system/uptime' -w @60:120 -c @1:60
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Interface Incoming Errors
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'interface/eth0/errin' -w 90 -c 95
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Interface Outgoing Errors
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'interface/eth0/errout' -w 90 -c 95
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Interface Packets Sent
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'interface/eth0/packets_sent'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
+
+define service {
+        host_name                       HOSTNAME
+        service_description             Interface Packets Received
+        use                             linux-service
+        check_command                   check_ncpa!-t 'mytoken' -P 5693  -M 'interface/eth0/packets_recv'
+        contacts                        nagiosadmin
+        contact_groups                  admins
+        }
