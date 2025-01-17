@@ -1,1 +1,16 @@
-`SELECT table_name AS 'Table', round(((data_length + index_length) / 1024 / 1024), 2) 'Size in MB' FROM information_schema.TABLES WHERE table_schema IN('nagios','nagiosql','nagiosxi');`
+The query is designed to retrieve the names and sizes of tables in the nagios, nagiosql, and nagiosxi databases
+
+SELECT table_name AS 'Table', round(((data_length + index_length) / 1024 / 1024), 2) 'Size in MB' FROM information_schema.TABLES WHERE table_schema IN('nagios','nagiosql','nagiosxi');
+show table status where Engine='MyISAM';
+show table status where Engine='InnoDB';
+show variables like 'max_connections';
+show global status like 'Max_used_connections';
+
+#Database Repair#
+
+systemctl stop mysqld.service
+cd /var/lib/mysql/nagios
+myisamchk -r -f nagios_<corrupted_table>
+systemctl start mariadb.service
+rm -f /usr/local/nagiosxi/var/dbmaint.lock
+php /usr/local/nagiosxi/cron/dbmaint.php
