@@ -14,3 +14,5 @@ myisamchk -r -f nagios_<corrupted_table>
 systemctl start mariadb.service
 rm -f /usr/local/nagiosxi/var/dbmaint.lock
 php /usr/local/nagiosxi/cron/dbmaint.php
+
+mysqlcheck -f -r -u root -pnagiosxi --all-databases
